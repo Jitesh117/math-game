@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:math_game_flutter/const.dart';
 import 'package:math_game_flutter/util/my_button.dart';
@@ -26,11 +28,78 @@ class _HomePageState extends State<HomePage> {
     '=',
     '0',
   ];
+  //number A, number B
+  int a = 1, b = 1;
   String userAnswer = '';
   void buttonTapped(String button) {
     setState(() {
-      userAnswer += button;
+      if (button == '=') {
+        checkResult();
+      } else if (button == 'C') {
+        userAnswer = '';
+      } else if (button == 'DEL') {
+        if (userAnswer.isNotEmpty) {
+          userAnswer = userAnswer.substring(0, userAnswer.length - 1);
+        }
+      }
+      // maximum of 3 digit numbers
+      else if (userAnswer.length < 3) {
+        userAnswer += button;
+      }
     });
+  }
+
+  void checkResult() {
+    if (a + b == int.parse(userAnswer)) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              backgroundColor: Colors.deepPurple,
+              content: Container(
+                height: 200,
+                // color: Colors.deepPurple,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      'Correct!',
+                      style: whiteTextStyle,
+                    ),
+                    GestureDetector(
+                      onTap: goToNextQuestion,
+                      child: Container(
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                            color: Colors.deepPurple.shade300,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          });
+    } else
+      print('not correct');
+  }
+
+  var RandomNumber = Random();
+
+  void goToNextQuestion() {
+    Navigator.of(context).pop();
+
+    setState(() {
+      userAnswer = '';
+    });
+
+    // create a new question
+    a = RandomNumber.nextInt(10);
+    b = RandomNumber.nextInt(10);
   }
 
   @override
@@ -52,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '1+1 = ',
+                      a.toString() + ' + ' + b.toString() + ' = ',
                       style: whiteTextStyle,
                     ),
 
