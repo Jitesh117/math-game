@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:math_game_flutter/const.dart';
 import 'package:math_game_flutter/util/my_button.dart';
+import 'package:math_game_flutter/util/result_message.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -33,7 +34,9 @@ class _HomePageState extends State<HomePage> {
   String userAnswer = '';
   void buttonTapped(String button) {
     setState(() {
-      if (button == '=') {
+      if (button == '=' && userAnswer.isEmpty) {
+        userAnswer = '';
+      } else if (button == '=' && !userAnswer.isEmpty) {
         checkResult();
       } else if (button == 'C') {
         userAnswer = '';
@@ -54,52 +57,40 @@ class _HomePageState extends State<HomePage> {
       showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
-              backgroundColor: Colors.deepPurple,
-              content: Container(
-                height: 200,
-                // color: Colors.deepPurple,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      'Correct!',
-                      style: whiteTextStyle,
-                    ),
-                    GestureDetector(
-                      onTap: goToNextQuestion,
-                      child: Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                            color: Colors.deepPurple.shade300,
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
+            return ResultMessage(
+                message: 'Correct',
+                onTap: goToNextQuestion,
+                icon: Icons.arrow_forward);
           });
-    } else
-      print('not correct');
+    } else {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return ResultMessage(
+                message: 'Sorry! Try Again',
+                onTap: goBackToQuestion,
+                icon: Icons.rotate_left);
+          });
+    }
   }
 
   var RandomNumber = Random();
 
+//Go to next question
   void goToNextQuestion() {
     Navigator.of(context).pop();
 
     setState(() {
       userAnswer = '';
     });
-
     // create a new question
     a = RandomNumber.nextInt(10);
     b = RandomNumber.nextInt(10);
+  }
+
+// GO back to current question
+  void goBackToQuestion() {
+    Navigator.of(context).pop();
   }
 
   @override
